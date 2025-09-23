@@ -1,0 +1,20 @@
+project:
+  name: "AI-Driven Automated Upgrade of Legacy Systems"
+  client: "Jing Sun"
+  context: |
+    Legacy system modernization project for Auckland Library.
+    Target stack: Node.js + MongoDB + Solr.
+    Use LLM-based code understanding, codemod, testing, and migration.
+workflow:
+  - agent: CodeUnderstandingAgent
+    tools: [repo, code-index, codegraph]
+  - agent: ModernizationPlannerAgent
+    tools: [sbom, vuln-scan, approval-gate]
+  - agent: CodemodAgent
+    tools: [codemod, build-test]
+  - agent: DataMigrationAgent
+    tools: [db-profiler, etl, solr-admin]
+  - agent: ValidationAgent
+    tools: [build-test, observability]
+  - agent: DocumentationAgent
+    tools: [docgen]

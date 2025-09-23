@@ -1,0 +1,4 @@
+# Simplified requirements for testing
+GitPython==3.1.40
+pathspec==0.12.1
+chardet==5.2.0

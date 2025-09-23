@@ -1,0 +1,348 @@
+# MCP Server Development Plan - Phase 1
+
+## Priority 1: CodeUnderstandingAgent MCP Servers
+
+### Overview
+Development of 3 core MCP servers required for the CodeUnderstandingAgent to analyze Auckland Library's legacy systems:
+1. **repo** - Repository analysis and structure mapping
+2. **code-index** - Full-text search and symbol indexing
+3. **codegraph** - Dependency graph and call flow analysis
+
+---
+
+## 1. REPO MCP Server
+
+### Purpose
+Git repository analysis and structure mapping for legacy codebase understanding
+
+### Core Functionality
+- Repository structure exploration and cataloging
+- Git history analysis for code evolution patterns
+- Branch and tag analysis
+- File type classification and statistics
+- Legacy architecture discovery
+
+### API Design
+
+#### Tools Available:
+```typescript
+interface RepoTools {
+  // Repository Structure Analysis
+  analyzeStructure(repoPath: string): RepositoryStructure;
+  getFileTree(repoPath: string, maxDepth?: number): FileTree;
+  classifyFiles(repoPath: string): FileClassification;
+  
+  // Git History Analysis
+  getCommitHistory(repoPath: string, limit?: number): CommitHistory[];
+  analyzeBranches(repoPath: string): BranchAnalysis;
+  getContributors(repoPath: string): ContributorStats[];
+  
+  // Legacy Pattern Detection
+  detectFrameworks(repoPath: string): FrameworkDetection;
+  findConfigFiles(repoPath: string): ConfigFileMap;
+  identifyEntryPoints(repoPath: string): EntryPoint[];
+}
+```
+
+#### Data Structures:
+```typescript
+interface RepositoryStructure {
+  totalFiles: number;
+  totalDirectories: number;
+  languages: LanguageStats[];
+  architecture: ArchitecturePattern;
+  complexity: ComplexityMetrics;
+}
+
+interface FileTree {
+  name: string;
+  type: 'file' | 'directory';
+  path: string;
+  size?: number;
+  lastModified?: Date;
+  children?: FileTree[];
+}
+
+interface FrameworkDetection {
+  frontend: string[];
+  backend: string[];
+  database: string[];
+  testing: string[];
+  buildTools: string[];
+}
+```
+
+### Implementation Plan
+
+#### Week 1: Core Infrastructure
+- [ ] Set up MCP server boilerplate
+- [ ] Implement basic Git operations wrapper
+- [ ] Create file system traversal utilities
+- [ ] Design data storage schema
+
+#### Week 2: Repository Analysis
+- [ ] Implement repository structure analysis
+- [ ] Add file type classification
+- [ ] Build commit history analyzer
+- [ ] Create branch analysis tools
+
+#### Week 3: Legacy Pattern Detection
+- [ ] Framework detection algorithms
+- [ ] Configuration file discovery
+- [ ] Entry point identification
+- [ ] Architecture pattern recognition
+
+#### Week 4: Testing & Integration
+- [ ] Unit tests for all functions
+- [ ] Integration testing with sample repos
+- [ ] Performance optimization
+- [ ] Documentation and examples
+
+---
+
+## 2. CODE-INDEX MCP Server
+
+### Purpose
+Full-text search across codebase with symbol and reference indexing for rapid code exploration
+
+### Core Functionality
+- Full-text search with syntax highlighting
+- Symbol indexing (functions, classes, variables)
+- Cross-reference tracking
+- Semantic code search
+- Usage pattern analysis
+
+### API Design
+
+#### Tools Available:
+```typescript
+interface CodeIndexTools {
+  // Indexing Operations
+  buildIndex(repoPath: string): IndexBuildResult;
+  updateIndex(repoPath: string, changedFiles: string[]): IndexUpdateResult;
+  getIndexStats(repoPath: string): IndexStatistics;
+  
+  // Search Operations
+  searchText(query: string, options?: SearchOptions): SearchResult[];
+  searchSymbols(symbolName: string, type?: SymbolType): SymbolResult[];
+  findReferences(symbol: string, filePath: string): ReferenceResult[];
+  
+  // Code Analysis
+  getSymbolDefinitions(filePath: string): SymbolDefinition[];
+  findUsages(symbol: string): UsageLocation[];
+  analyzeImports(filePath: string): ImportAnalysis;
+}
+```
+
+#### Data Structures:
+```typescript
+interface SearchOptions {
+  fileTypes?: string[];
+  caseSensitive?: boolean;
+  regex?: boolean;
+  maxResults?: number;
+  context?: number; // lines of context
+}
+
+interface SearchResult {
+  filePath: string;
+  lineNumber: number;
+  columnNumber: number;
+  matchText: string;
+  context: string[];
+  score: number;
+}
+
+interface SymbolDefinition {
+  name: string;
+  type: SymbolType;
+  filePath: string;
+  location: Location;
+  signature?: string;
+  documentation?: string;
+}
+
+enum SymbolType {
+  FUNCTION = 'function',
+  CLASS = 'class',
+  VARIABLE = 'variable',
+  INTERFACE = 'interface',
+  MODULE = 'module'
+}
+```
+
+### Implementation Plan
+
+#### Week 1: Indexing Infrastructure
+- [ ] Design inverted index data structure
+- [ ] Implement file parsing for multiple languages
+- [ ] Create incremental indexing system
+- [ ] Set up storage backend (SQLite)
+
+#### Week 2: Symbol Analysis
+- [ ] AST-based symbol extraction
+- [ ] Cross-reference building
+- [ ] Import/export relationship mapping
+- [ ] Type information extraction
+
+#### Week 3: Search Engine
+- [ ] Full-text search implementation
+- [ ] Ranking and relevance scoring
+- [ ] Fuzzy matching capabilities
+- [ ] Context-aware search
+
+#### Week 4: Optimization & Testing
+- [ ] Performance optimization for large codebases
+- [ ] Memory usage optimization
+- [ ] Comprehensive test suite
+- [ ] Benchmarking and profiling
+
+---
+
+## 3. CODEGRAPH MCP Server
+
+### Purpose
+Dependency graph generation and call flow analysis for understanding legacy system architecture
+
+### Core Functionality
+- Dependency graph visualization
+- Call graph generation
+- Data flow analysis
+- Circular dependency detection
+- Impact analysis for changes
+
+### API Design
+
+#### Tools Available:
+```typescript
+interface CodeGraphTools {
+  // Graph Generation
+  buildDependencyGraph(repoPath: string): DependencyGraph;
+  generateCallGraph(entryPoints: string[]): CallGraph;
+  analyzeDataFlow(startFunction: string): DataFlowGraph;
+  
+  // Analysis Operations
+  findCircularDependencies(graph: DependencyGraph): CircularDependency[];
+  analyzeImpact(changedFiles: string[]): ImpactAnalysis;
+  getModuleCoupling(modulePath: string): CouplingMetrics;
+  
+  // Visualization
+  exportGraph(graph: Graph, format: 'dot' | 'json' | 'svg'): string;
+  getSubgraph(graph: Graph, nodeId: string, depth: number): Graph;
+}
+```
+
+#### Data Structures:
+```typescript
+interface DependencyGraph {
+  nodes: DependencyNode[];
+  edges: DependencyEdge[];
+  metadata: GraphMetadata;
+}
+
+interface DependencyNode {
+  id: string;
+  name: string;
+  type: NodeType;
+  filePath: string;
+  metrics: NodeMetrics;
+}
+
+interface DependencyEdge {
+  from: string;
+  to: string;
+  type: EdgeType;
+  weight: number;
+  location: Location;
+}
+
+interface CallGraph {
+  functions: FunctionNode[];
+  calls: CallEdge[];
+  entryPoints: string[];
+}
+
+interface CircularDependency {
+  cycle: string[];
+  severity: 'low' | 'medium' | 'high';
+  suggestions: string[];
+}
+```
+
+### Implementation Plan
+
+#### Week 1: Graph Infrastructure
+- [ ] Graph data structure implementation
+- [ ] File parsing and AST analysis setup
+- [ ] Basic dependency extraction
+- [ ] Graph storage and serialization
+
+#### Week 2: Dependency Analysis
+- [ ] Import/require statement analysis
+- [ ] Module boundary detection
+- [ ] Package dependency mapping
+- [ ] Circular dependency detection
+
+#### Week 3: Call Flow Analysis
+- [ ] Function call extraction
+- [ ] Call graph generation
+- [ ] Data flow tracking
+- [ ] Cross-file reference resolution
+
+#### Week 4: Advanced Features
+- [ ] Impact analysis algorithms
+- [ ] Coupling metrics calculation
+- [ ] Graph visualization export
+- [ ] Performance optimization
+
+---
+
+## Development Environment Setup
+
+### Prerequisites
+- Node.js 18+ with TypeScript
+- Python 3.9+ for language parsing
+- SQLite for data storage
+- Git for repository operations
+
+### Project Structure
+```
+/mcp-servers/
+├── repo/
+│   ├── src/
+│   ├── tests/
+│   ├── package.json
+│   └── README.md
+├── code-index/
+│   ├── src/
+│   ├── tests/
+│   ├── package.json
+│   └── README.md
+├── codegraph/
+│   ├── src/
+│   ├── tests/
+│   ├── package.json
+│   └── README.md
+└── shared/
+    ├── utils/
+    ├── types/
+    └── test-fixtures/
+```
+
+### Testing Strategy
+- Unit tests for each MCP server
+- Integration tests with sample repositories
+- Performance benchmarks
+- Auckland Library legacy code validation
+
+### Delivery Timeline
+- **Week 4 End:** All 3 MCP servers functional
+- **Week 5:** Integration with CodeUnderstandingAgent
+- **Week 6:** Auckland Library legacy system testing
+- **Week 7:** Performance optimization and bug fixes
+
+## Success Metrics
+- Repository analysis completes within 30 seconds for typical legacy repos
+- Code search returns results within 500ms
+- Dependency graphs generated for codebases up to 100k LOC
+- Zero crashes on Auckland Library legacy codebase
